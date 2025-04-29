@@ -10,9 +10,10 @@ import {
   PopoverGroup,
   PopoverPanel,
 } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon, ShoppingBagIcon } from "@heroicons/react/24/outline"; // Import ShoppingBagIcon
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import logo from "../assets/logoWinery.png";
+import { useCart } from "../context/CartContext"; // Import useCart
 
 const products = [
   { name: "All Wines", href: "/products " },
@@ -23,6 +24,11 @@ const products = [
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { cart } = useCart(); // Get cart state
+
+  // Calculate total items in cart
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+
 
   return (
     <header className="w-full sticky top-0 z-5 shadow-md">
@@ -94,7 +100,15 @@ const Navbar = () => {
             Contact Us
           </Link>
         </PopoverGroup>
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+        <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-x-4"> 
+          <Link to="/cart" className="relative p-3 rounded-md hover:bg-darkercharcoal">
+            <ShoppingBagIcon className="h-6 w-6 text-panna" aria-hidden="true" />
+            {totalItems > 0 && (
+              <span className="absolute top-1 right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-darkbrown rounded-full">
+                {totalItems}
+              </span>
+            )}
+          </Link>
           <Link
             to="/login"
             className="text-md/6 font-semibold text-panna p-3 rounded-md hover:bg-darkercharcoal"
@@ -107,13 +121,10 @@ const Navbar = () => {
           onClose={setMobileMenuOpen}
           className="lg:hidden"
         >
-          {/* Background overlay */}
           <div className="fixed inset-0 z-10 bg-black bg-opacity-50" />
 
-          {/* Dialog panel */}
           <DialogPanel className="fixed inset-y-0 right-0 z-20 w-full max-w-sm overflow-y-auto bg-charckoal px-6 py-6 sm:ring-1 sm:ring-gray-900/10">
             <div className="flex items-center justify-between">
-              {/* Logo */}
               <Link to="/" className="-m-1.5 p-1.5">
                 <span className="sr-only">Your Company</span>
                 <img
@@ -176,11 +187,19 @@ const Navbar = () => {
               </div>
             </div>
 
-            {/* Footer links */}
-            <div className="py-6 flex gap-x-6 justify-center">
+            <div className="py-6 flex gap-x-6 justify-center items-center"> {/* Added items-center */}
+              <Link to="/cart" className="relative p-3 rounded-md hover:bg-darkercharcoal" onClick={() => setMobileMenuOpen(false)} >
+                <ShoppingBagIcon className="h-6 w-6 text-panna" aria-hidden="true" />
+                {totalItems > 0 && (
+                  <span className="absolute top-1 right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 bg-darkbrown rounded-full">
+                    {totalItems}
+                  </span>
+                )}
+              </Link>
               <Link
                 to="/login"
                 className="text-md font-semibold text-panna p-3 rounded-md hover:bg-darkercharcoal"
+                onClick={() => setMobileMenuOpen(false)} // Close menu on click
               >
                 Log in <span aria-hidden="true">&rarr;</span>
               </Link>
